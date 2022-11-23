@@ -1,21 +1,15 @@
 <?php
 
-require 'AuthHelper.php';
-require 'UserDisplayHelper.php';
-//set_include_path(get_include_path() . PATH_SEPARATOR . 'Users/UserDisplayHelper.php');
-//require get_include_path() . PATH_SEPARATOR . 'Users/UserDisplayHelper.php';
-//print_r(get_include_path());
-//sign in
+require "AuthHelper.php";
+
+//sign in returns administrator or user then directs to appropriate area
 if (isset($_POST['email']) && isset($_POST['password'])) {
 
     $userType = AuthHelper::signIn($_POST['email'], $_POST['password']);
-    print_r($userType);
-    if($userType=='user') UserDisplayHelper::displayUsersPage();
-    //else if ($userType=='administrator') AdministratorDisplayHelper::displayAdministratorsPage();
-    //else  print_r('ELSE');
-
+    if($userType=='user') header('Location: ../Users/UserDisplayHelper.php');
+    else if ($userType=='administrator') header('Location: ../Administrators/AdministratorDisplayHelper.php');
+    else header('Location: ../index.php?failedSignIn=true');
 }
-
 
 class AuthDisplayHelper
 {
@@ -46,15 +40,13 @@ class AuthDisplayHelper
                 <div class="form-group col-sm-4">
                     <label for="exampleInputEmail1">Email address</label>
                     <input required maxlength="<?='50'?>" type="email" name="<?='email'?>" class="form-control" aria-describedby="emailHelp" placeholder="<?='Enter email'?>">
-                    <small id="emailHelp" class="<?='form-text text-muted'?>"><?='This will be your user name.'?></small>
+                    <small id="emailHelp" class="<?='form-text text-muted'?>"><?='Enter your user name.'?></small>
                 </div>
                 <div class="form-group col-sm-4">
-                    <label for="email"><?='Password'?></label>
-                    <input type="password" name="<?='password'?>" class="form-control" placeholder="<?='Minimum 8 characters'?>">
+                    <label for="email"><?='password'?></label>
+                    <input type="password" name="<?='password'?>" class="form-control" placeholder="<?='Enter password'?>">
                     <button type="submit" class="btn btn-primary"><?='Sign in'?></button>
-                </div>
-                <div class="form-group col-sm-4">
-                    <a href="" class="btn btn-primary"><?='Sign Up'?></a>
+                    <a href="<?='auth/SignUp.php'?>" class="btn btn-primary"><?='Sign Up'?></a>
                 </div>
             </form>
         </div>
@@ -66,14 +58,5 @@ class AuthDisplayHelper
         </html>
         <?php
     }
-
-    static function displayFailedSignIn() {
-    ?>
-        <div class="col-sm-4">
-            <p><?='Failed to sign in'?></p>
-        </div>
-    <?php
-    }
-
 }
 ?>

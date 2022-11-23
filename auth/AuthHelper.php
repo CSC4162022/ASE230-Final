@@ -7,47 +7,47 @@ Class AuthHelper {
     static private $administratorsFile = '../data/administrators.csv';
     static private $bannedUsersFile = '../data/banned.csv';
 
-    //create a new user and save to the database
+    //validate input, save a new user to the appropriate file and return the user type (admin or user)
     static function signUp($email, $password, $userType)
     {
-        print_r('CALLED signUp' . $userType);
-        if (!self::validateSigninInput($email, $password)) {
-            return false;
-        }
-        if (self::userIsBanned($email, self::$bannedUsersFile)) {
-            return false;
-        }
-        // check if the email is in the database already
+        if (!isset($userType) || !isset($email) || !isset($password)) return '';
+        if (!self::validateSignUpInput($email, $password)) return '';
+        //don't inform the visitor the account is banned
+        if (self::userIsBanned($email, self::$bannedUsersFile)) return '';
+        // check if the username is taken
         if (self::emailExists($email, self::$usersFile) || self::emailExists($email, self::$administratorsFile)) {
-
-            header('Location: ./index.php');
+            header('Location: ./Visitors.php?usernameTaken=true');
         } else {
             if ($userType=='user') {
                 self::saveNewUser(self::$usersFile, $email, self::encryptPassword($password));
                 $_SESSION['newEnrolledUser'] = true;
-                return true;
+                return $userType;
             }
             else {
                 self::saveNewUser(self::$administratorsFile, $email, self::encryptPassword($password));
-                $_SESSION['newEnrolledUser'] = true;
-                return true;
+                $_SESSION['newEnrolledAdministrator'] = true;
+                return $userType;
             }
         }
-        return false;
+        return '';
     }
-
+    //check if banned, return user type (admin,user) if valid credentials
     static function signIn($email, $password)
     {
         $userType = '';
         if (!isset($email) || !isset($password)) return $userType;
-        if (self::userIsBanned($email, self::$bannedUsersFile)) return $userType;
+        if (self::userIsBanned($email, self::$bannedUsersFile)) die($email . ' is banned.');
         if (self::isAdministrator($email)) {
             $userType = 'administrator';
             $line = fopen(self::$administratorsFile, 'r');
         }
-        if (self::isUser($email)) {
+        else if (self::isUser($email)) {
             $userType = 'user';
             $line = fopen(self::$usersFile, 'r');
+        }
+        else {
+            //user doesn't exist
+            return $userType;
         }
         while ( false !== ( $data = fgetcsv($line))) {
             if ($data[0] == $email) {
@@ -56,20 +56,17 @@ Class AuthHelper {
                     $_SESSION['email'] = $email;
                     $_SESSION['password'] = $password;
                     $_SESSION['logged']=true;
+                    $_SESSION['userType']=$userType;
                     return $userType;
                 }
             }
         }
-        //TODO: if is logged direct to appropriate user or admin area
-        if (self::isLogged()) {
-            return $userType;
-            //header('Location: ./Visitor.php?alreadyLogged=true');
-        }
+        //will return to users or admin page
+        if (self::isLogged()) return $userType;
         else {
             $_SESSION['logged'] = false;
-            //header('Location: ./Visitor.php?failedSignin=true');
+            return $userType;
         }
-        return $userType;
     }
 
     static function saveNewUser($selectedFile, $email, $passwordHash) {
@@ -83,7 +80,7 @@ Class AuthHelper {
     }
 
     //Utility function to validate length of the password and format of email
-    static function validateSigninInput($email, $password) {
+    static function validateSignUpInput($email, $password) {
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
         if (strlen($password) < 8) return false;
         return true;
