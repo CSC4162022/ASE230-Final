@@ -24,6 +24,7 @@ class Product
         }
     }
     //set products array from database
+    /*
     public function setProducts() {
         $dbo = new DB();
         try {
@@ -43,6 +44,7 @@ class Product
             die("Error: ".$ex->getMessage());
         }
     }
+    */
 
     //return array of products belonging to specified category
     public function getProductsByCategory($cat) {

@@ -1,9 +1,7 @@
 <?php
 session_start();
-
-require 'Visitor.php';
-
-
+require 'Utilities.php';
+//immediately direct to visitors page
 ?>
 <!doctype html>
 <html lang="en">
@@ -19,7 +17,7 @@ require 'Visitor.php';
 <body>
     <div class="container text-center">
         <?php
-            Visitor::displayVisitorsPage();
+            header('Location: ./Visitor.php');
         ?>
     </div>
 
