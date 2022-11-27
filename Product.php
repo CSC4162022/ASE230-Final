@@ -10,6 +10,8 @@ class Product
     private $price;
     private $availableQuantity;
     private $visible;
+    private $orderQuantity;
+    private $cart;
     private $products=[];
 
     //magic get/setters
