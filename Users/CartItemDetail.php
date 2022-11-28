@@ -7,11 +7,6 @@ if (isset($_SESSION['products']) && isset($_GET['index'])) {
     $selection = $products[$_GET['index']];
     CartItemDetail::display($selection);
 }
-else if (isset($_POST['quantity'])) {
-    $_SESSION['selectedQuantity']=$_POST['quantity'];
-    header('Location: ./UserDisplayHelper.php?selectedQuantity='.$_POST['quantity']);
-}
-
 
 //display the selected product, prompt user for quantity
 Class CartItemDetail {
@@ -30,13 +25,18 @@ Class CartItemDetail {
             <title><?= 'Product detail'?></title>
         </head>
         <body>
+        <!-- select the quantity and return to the products list with an updated cart -->
         <div class="container text-center">
-            <form method="POST" class="form-outline" action="./CartItemDetail.php">
+            <form method="POST" class="form-outline" action="UserDisplayHelper.php">
                 <p><?='please select the desired quantity'?></p>
                 <label><?=$selection['description']?></label>
                 <label for="quantity"><?='quantity'?></label>
                 <input type="text" name="<?='quantity'?>" value="1">
-                <button class="btn btn-primary" type="submit"><?='Submit'?></button>
+                <input type="hidden" name="<?='productID'?>" value="<?=$selection['productID']?>" />
+                <input type="hidden" name="<?='description'?>" value="<?=$selection['description']?>" />
+                <input type="hidden" name="<?='price'?>" value="<?=$selection['price']?>" />
+                <input type="hidden" name="<?='category'?>" value="<?=$selection['category']?>" />
+                <input type="submit" value="<?='Submit'?>" name = "<?= 'submitQuantity' ?>" class="btn btn-primary">
                 <a href="./UserDisplayHelper.php"><button class="btn btn-primary"><?='Back'?></button></a>
             </form>
         </div>
@@ -45,8 +45,6 @@ Class CartItemDetail {
 <?php
     }
 }
-
-
 ?>
 
 
