@@ -3,7 +3,8 @@
 require "AuthHelper.php";
 
 //sign in returns administrator or user then directs to appropriate area
-if (isset($_POST['email']) && isset($_POST['password'])) {
+if (isset($_POST['email']) && isset($_POST['password']) && isset($_SESSION['utilities'])) {
+
 
     $userType = AuthHelper::signIn($_POST['email'], $_POST['password']);
     if($userType=='user') header('Location: ../Users/UserDisplayHelper.php');
@@ -13,10 +14,8 @@ if (isset($_POST['email']) && isset($_POST['password'])) {
 
 class AuthDisplayHelper
 {
-
     //sign in and route to correct area
-    static function displaySignInForm() {
-
+    static function displaySignInForm() {;
         ?>
         <!doctype html>
         <html lang="en">
