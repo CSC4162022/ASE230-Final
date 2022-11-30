@@ -40,11 +40,20 @@ class AdministratorDBUtility {
 
     function getProducts()
     {
-        $products = array();
         try {
             $result = self::query('SELECT * FROM products');
-            $products = $result->fetchall();
-            return $products;
+            return $result->fetchall();
+        } catch (Exception $ex) {
+            die("Error: " . $ex->getMessage());
+        }
+    }
+
+    function getOrders() {
+        try {
+            $result = self::query('SELECT orders.orderID, orders.orderStatus, users.email 
+FROM orders
+INNER JOIN users ON orders.userID=users.userID;');
+            return $result->fetchall();;
         } catch (Exception $ex) {
             die("Error: " . $ex->getMessage());
         }
