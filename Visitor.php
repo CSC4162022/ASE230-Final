@@ -21,6 +21,7 @@ require 'Utilities.php';
         $products=[];
         $utilities = new Utilities();
         $products=$utilities->getProducts();
+        $_SESSION['utilities']=$utilities;
         AuthDisplayHelper::displaySignInForm();
         ?>
         <ul class="list-group">
