@@ -20,6 +20,7 @@ if (isset($_POST['quantity']) && isset($_POST['description'])
 if (isset($_POST['submitOrder'])) {
     $userDH->submitOrder($db, $user);
     //reset
+    $_POST=null;
     $_SESSION['cartItems']=[];
 }
 //display products
@@ -57,15 +58,14 @@ Class UserDisplayHelper {
             'category' => $category,
             'productID' => $productID
         ];
-        array_push(self::$cartItems, $product);
+        if (!isset($_SESSION['cartItems'])) $_SESSION['cartItems']=[];
         array_push($_SESSION['cartItems'], $product);
     }
     function submitOrder($db, $user) {
         $orderID = $db->insertOrder('ordered',$user->email);
-        print_r('orderID'. $orderID);
         foreach($_SESSION['cartItems'] as $product) {
-            print_r($product);
-            $db->insertOrderProduct($product, $orderID, $product['quantity']);
+            $db->insertOrderProduct($product, $orderID);
+            $db->updateAvailableQuantity($product);
         }
     }
     function displayOrder() {
@@ -107,22 +107,26 @@ Class UserDisplayHelper {
             </head>
             <body>
                 <div class="container text-center">
-                    <h5><?='Select Items'?></h5>
-                    <div class="d-flex align-items-center justify-content-center">
-                        <div class="list-group">
-                            <form method="post" action="./UserDisplayHelper.php">
+                    <div class="row">
+                        <div class="form-outline mb-4 col-sm">
+                            <p><a href="../auth/SignOut.php"><?= 'Sign Out' ?></a></p>
+                            <p><a href="../index.php"><?= 'Back' ?></a></p>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center col-sm">
+                            <div class="list-group">
+                                <h5><?='Select Items'?></h5>
                                 <ul>
-                            <?php
-                            //always sending last row in products table, Fix it
-                            for($i=0; $i<count($products); $i++) {
-                                ?>
-                                <a class="list-group-item list-group-item-action" href="<?='./CartItemDetail.php?index='.$i.'&description='.$products[$i]['description']?>">
-                                    <?=$products[$i]['description'] . ' $' . $products[$i]['price']?></a>
-                                <?php
-                            }
-                            ?>
+                                    <?php
+                                    //always sending last row in products table, Fix it
+                                    for($i=0; $i<count($products); $i++) {
+                                        ?>
+                                        <a class="list-group-item list-group-item-action" href="<?='./CartItemDetail.php?index='.$i.'&description='.$products[$i]['description']?>">
+                                            <?=$products[$i]['description'] . ' $' . $products[$i]['price']?></a>
+                                        <?php
+                                    }
+                                    ?>
                                 </ul>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>
