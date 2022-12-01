@@ -5,8 +5,15 @@ class UserDBUtility {
 
     static $connection=null;
 
+
     //create new connection if one doesn't exist
-    static function connect($host,$db,$user,$pass,$port,$charset){
+    static function connect(){
+        $host = '127.0.0.1';
+        $db = 'FooCommerce';
+        $user = 'root';
+        $pass = '';
+        $port = 3306;
+        $charset = 'utf8mb4';
         if(isset(self::$connection)) return self::$connection;
         $options=[
             \PDO::ATTR_ERRMODE=>\PDO::ERRMODE_EXCEPTION,
@@ -97,7 +104,6 @@ class UserDBUtility {
         try{
             $sql = "UPDATE products SET availableQuantity = availableQuantity - ? WHERE productID = ?";
             $stmt=self::$connection->prepare($sql)->execute([$product['quantity'], $product['productID']]);
-            print_r($stmt);
             return true;
         } catch (Exception $ex) {
             die("Error: " . $ex->getMessage());

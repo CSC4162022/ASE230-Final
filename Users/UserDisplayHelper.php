@@ -4,7 +4,7 @@ require_once 'UserDBUtility.php';
 if(!isset($_SESSION)) session_start();
 
 $userDH = new UserDisplayHelper();
-UserDBUtility::connect($userDH::$host,$userDH::$db,$userDH::$user,$userDH::$pass,$userDH::$port,$userDH::$charset);
+UserDBUtility::connect();
 $db = new UserDBUtility();
 $user = new User();
 $user->setUserFromSession($_SESSION);
@@ -31,12 +31,7 @@ $userDH->displayProducts($products);
 //update available quantity
 //convenience class to display products
 Class UserDisplayHelper {
-    static $host = '127.0.0.1';
-    static $db = 'FooCommerce';
-    static $user = 'root';
-    static $pass = '';
-    static $port = 3306;
-    static $charset = 'utf8mb4';
+
     static $cartItems=[];
 
     public function __get($property) {
@@ -117,10 +112,9 @@ Class UserDisplayHelper {
                                 <h5><?='Select Items'?></h5>
                                 <ul>
                                     <?php
-                                    //always sending last row in products table, Fix it
                                     for($i=0; $i<count($products); $i++) {
                                         ?>
-                                        <a class="list-group-item list-group-item-action" href="<?='./CartItemDetail.php?index='.$i.'&description='.$products[$i]['description']?>">
+                                        <a class="list-group-item list-group-item-action" href="<?='./ProductDetail.php?index='.$i.'&description='.$products[$i]['description']?>">
                                             <?=$products[$i]['description'] . ' $' . $products[$i]['price']?></a>
                                         <?php
                                     }
