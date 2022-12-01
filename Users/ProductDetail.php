@@ -1,15 +1,14 @@
 <?php
-
 if(!isset($_SESSION)) session_start();
 
-if (isset($_SESSION['products']) && isset($_GET['index'])) {
+if (isset($_SESSION['products']) && isset($_GET['index']) && isset($_GET['description'])) {
     $products = $_SESSION['products'];
     $selection = $products[$_GET['index']];
-    CartItemDetail::display($selection);
+    ProductDetail::display($selection);
 }
 
 //display the selected product, prompt user for quantity
-Class CartItemDetail {
+Class ProductDetail {
 
     static function display($selection) {
 
