@@ -1,4 +1,13 @@
 <?php
+if(!isset($_SESSION)) session_start();
+require_once './AdministratorDisplayHelper.php';
+
+$db = new AdministratorDBUtility();
+$db::connect();
+//admin selected manage orders
+if(isset($_GET['manageOrders'])) { AdministratorManageOrders::display($db); $_GET=null; }
+//admin selected view order/
+if(isset($_POST['orderID'])) { AdministratorManageOrders::display($db); $_POST=null; }
 
 
 Class AdministratorManageOrders {
@@ -7,23 +16,19 @@ Class AdministratorManageOrders {
 
     }
 
-    static function updateOrder() {
+    static function updateUpdateOrderStatus($order, $status) {
 
     }
 
-    static function deleteOrders() {
+    static function deleteOrder() {
 
     }
 
-    static function display($dbo) {
-        $host = '127.0.0.1';
-        $db = 'FooCommerce';
-        $user = 'root';
-        $pass = '';
-        $port = 3306;
-        $charset = 'utf8mb4';
-        $dbo::connect($host,$db,$user,$pass,$port,$charset);
-        $orders=$dbo->getOrders();
+    static function display($db) {
+        //get user list for order selection
+        //$users=$dbo->getUsers();
+        $orders=$db->getOrders();
+
         ?>
         <!doctype html>
         <html lang="en">
@@ -36,35 +41,89 @@ Class AdministratorManageOrders {
             <title><?= 'Welcome ' . $_SESSION['email']?></title>
         </head>
         <body>
-        <div class="container text-center">
-            <div class="row">
-                <div class="form-outline mb-4 col-sm">
-                    <p><a href="../auth/SignOut.php"><?= 'Sign Out' ?></a></p>
-                    <p><a href="../index.php"><?= 'Back' ?></a></p>
-                </div>
-                <div class="d-flex align-items-center justify-content-center col-sm">
-                    <div class="list-group">
-                        <h5><?='Select Items'?></h5>
-                        <ul>
-                            <?php
-                            //always sending last row in products table, Fix it
-                            for($i=0; $i<count($orders); $i++) {
-                                ?>
-                                <a class="list-group-item list-group-item-action" href="<?='./CartItemDetail.php?index='.$i.'&description='.$orders[$i]['description']?>">
-                                    <?=$orders[$i]['description'] . ' $' . $orders[$i]['price']?></a>
+            <div class="container text-center">
+                <div class="row">
+                    <div class="d-flex align-items-center justify-content-center col-sm">
+                        <div class="list-group">
+                            <h5><?='User Orders'?></h5>
+                            <ul>
                                 <?php
-                            }
-                            ?>
-                        </ul>
+                                for($i=0; $i<count($orders); $i++) {
+                                    ?>
+                                    <div class="container">
+                                        <div class="row">
+                                            <div class="col-sm">
+                                                <p class="list-group-item list-group-item-action">
+                                                    <?='OrderID: ' . $orders[$i]['orderID'] . ' Status: ' . $orders[$i]['orderStatus'] . ' Username: ' . $orders[$i]['email']?></p>
+                                            </div>
+                                            <form method="POST" class="form-outline" action="AdministratorManageOrders.php">
+                                                <div class="form-group">
+                                                    <div class="form-outline mb-4">
+                                                        <input type="hidden" name="<?='orderID'?>" value="<?=$orders[$i]['orderID']?>"/>
+                                                        <input type="hidden" name="<?='deleteOrder'?>" value="<?='deleteOrder'?>"/>
+                                                        <input type="submit" value="<?='Delete Order'?>" class="btn btn-primary">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                            <form method="POST" class="form-outline" action="AdministratorManageOrders.php">
+                                                <div class="form-group">
+                                                    <div class="form-outline mb-4">
+                                                        <input type="hidden" name="<?='orderID'?>" value="<?=$orders[$i]['orderID']?>"/>
+                                                        <input type="hidden" name="<?='viewOrder'?>" value="<?='viewOrder'?>"/>
+                                                        <input type="submit" value="<?='View Order'?>" class="btn btn-primary">
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <?php
+                                }
+                                //if admin selected the order display it's products
+                                if(isset($_POST['orderID'])) {
+                                    $statusOption=[];
+                                ?>
+                                <div class="container">
+                                    <?php
+                                        //get order items using orderID
+                                         $orderItems=$db->getOrderItems($_POST['orderID']);
+                                        if(isset($orderItems)) {
+                                            $userName=$orderItems[0]['firstName'].' '.$orderItems[0]['lastName'];
+                                            $orderStatus=$orderItems[0]['orderStatus'];
+                                            ?>
+                                            <p><strong><?='Order for user: '.$userName?></strong></p>
+                                            <p><?='orderID: '.$_POST['orderID']?></p>
+                                            <?php
+                                            foreach($orderItems as $item) {
+                                            ?>
+                                            <p><?=' Product: '.$item['description'].' status: '.$item['orderStatus']?></p>
+                                            <?php
+                                            }
+                                        if($orderStatus=='ordered') $statusOption = ['canceled', 'in progress'];
+                                        if($orderStatus=='in progress') $statusOption = ['shipped'];
+                                        if($orderStatus=='shipped') $statusOption = ['delivered'];
+                                        }
+
+                                    ?>
+                                    <form method="POST" class="form-outline" action="AdministratorManageOrders.php">
+                                        <select name="<?='statusOption'?>">
+                                            <?php foreach( $statusOption as $option ): ?>
+                                                <option value="<?=$option?>"><?=$option?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                        <input type="submit" value="<?='submit status change'?>" class="btn btn-primary">
+                                    </form>
+                                </div>
+                                    <?php
+                                }
+                                ?>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         </body>
-        </html>
+    </html>
+
     <?php
     }
 

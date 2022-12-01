@@ -3,22 +3,19 @@ if(!isset($_SESSION)) session_start();
 require 'Administrator.php';
 require 'AdministratorDBUtility.php';
 require_once 'AdministratorManageOrders.php';
-require_once 'AdministratorManageUsers.php';
 require_once 'AdministratorManageProducts.php';
 
 $db = new AdministratorDBUtility();
 $admin = new Administrator();
 $admin->setAdminFromSession($_SESSION);
 $adminDH = new AdministratorDisplayHelper();
-$adminDH->display();
+//if new sign in display
+if (isset($_GET['newSession'])) $adminDH->display();
 
 if (isset($_POST['manageOrders'])) $adminDH->displayOrderManagement($db);
-if (isset($_POST['manageUsers'])) $adminDH->displayUserManagement($db);
 if (isset($_POST['manageUsers'])) $adminDH->displayProductManagement($db);
 
 Class AdministratorDisplayHelper {
-
-    private $utilities;
 
     public function __get($property) {
         if (property_exists($this, $property)) {
@@ -32,9 +29,6 @@ Class AdministratorDisplayHelper {
     }
     function displayOrderManagement($db) {
         AdministratorManageOrders::display($db);
-    }
-    function displayUserManagement($db) {
-        AdministratorManageUsers::display($db);
     }
     function displayProductManagement($db) {
         AdministratorManageProduct::display($db);
@@ -72,18 +66,6 @@ Class AdministratorDisplayHelper {
                     <form method="POST" class="form-outline" action="AdministratorDisplayHelper.php">
                         <div class="form-group">
                             <div class="form-outline mb-4">
-                                <input type="hidden" name="<?='manageUsers'?>" value="<?='manageUsers'?>"/>
-                                <input type="submit" value="<?='Manage Users'?>" name = "<?= 'Manage Users' ?>" class="btn btn-primary">
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <div class="row">
-                <div clas="col-sm">
-                    <form method="POST" class="form-outline" action="AdministratorDisplayHelper.php">
-                        <div class="form-group">
-                            <div class="form-outline mb-4">
                                 <input type="hidden" name="<?='manageProducts'?>" value="<?='manageProducts'?>"/>
                                 <input type="submit" value="<?='Manage Products'?>" name = "<?= 'Manage Products' ?>" class="btn btn-primary">
                             </div>
@@ -91,10 +73,16 @@ Class AdministratorDisplayHelper {
                     </form>
                 </div>
             </div>
+            <div class="row">
+                <div class="form-outline mb-4 col-sm">
+                    <p><a href="../auth/SignOut.php"><?= 'Sign Out' ?></a></p>
+                    <p><a href="./AdministratorDisplayHelper.php"><?= 'Back' ?></a></p>
+                </div>
+            </div>
         </div>
-            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         </body>
         </html>
         <?php
