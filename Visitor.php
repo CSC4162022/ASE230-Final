@@ -4,14 +4,14 @@ require 'Utilities.php';
 
 ?>
 <!doctype html>
-        <html lang="en">
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-            <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
-            <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
-            <link rel="stylesheet" href="assets/css/index.css" />
-            <title><?= 'Visitors' ?></title>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="assets/css/index.css" />
+    <title><?= 'Visitors' ?></title>
 </head>
 <body>
 <div class="container text-center">
@@ -21,7 +21,6 @@ require 'Utilities.php';
         $products=[];
         $utilities = new Utilities();
         $products=$utilities->getProducts();
-        $_SESSION['utilities']=$utilities;
         AuthDisplayHelper::displaySignInForm();
         ?>
         <ul class="list-group">
