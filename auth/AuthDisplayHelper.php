@@ -4,19 +4,17 @@ require "AuthHelper.php";
 
 //sign in returns administrator or user then directs to appropriate area
 if (isset($_POST['email']) && isset($_POST['password'])) {
-
     $userType = AuthHelper::signIn($_POST['email'], $_POST['password']);
-    if($userType=='user') header('Location: ../Users/UserDisplayHelper.php');
-    else if ($userType=='administrator') header('Location: ../Administrators/AdministratorDisplayHelper.php');
+    if($userType=='user') header('Location: ../Users/UserDisplayHelper.php?');
+    else if ($userType=='administrator') header('Location: ../Administrators/AdministratorDisplayHelper.php?newSession=true');
     else header('Location: ../index.php?failedSignIn=true');
+
 }
 
 class AuthDisplayHelper
 {
-
     //sign in and route to correct area
     static function displaySignInForm() {
-
         ?>
         <!doctype html>
         <html lang="en">

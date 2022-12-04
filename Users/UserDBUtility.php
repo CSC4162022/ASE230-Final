@@ -5,8 +5,15 @@ class UserDBUtility {
 
     static $connection=null;
 
+
     //create new connection if one doesn't exist
-    static function connect($host,$db,$user,$pass,$port,$charset){
+    static function connect(){
+        $host = '127.0.0.1';
+        $db = 'FooCommerce';
+        $user = 'root';
+        $pass = '';
+        $port = 3306;
+        $charset = 'utf8mb4';
         if(isset(self::$connection)) return self::$connection;
         $options=[
             \PDO::ATTR_ERRMODE=>\PDO::ERRMODE_EXCEPTION,
@@ -71,7 +78,7 @@ class UserDBUtility {
             die("Error: " . $ex->getMessage());
         }
     }
-
+    //step 1 of submit cart: get userID and create the order in Orders table
     function insertOrder($status='ordered', $email) {
         try{
             $userID = self::getUserID($email);
@@ -82,20 +89,24 @@ class UserDBUtility {
             die("Error: " . $ex->getMessage());
         }
     }
-
-    function insertOrderProduct($product, $orderID, $quantity) {
+    //step 2 of submit cart: insert the order items into Order Products table
+    function insertOrderProduct($product, $orderID) {
         try{
-            $productID=self::getProductID($product['description']);
-            if (!isset($productID)) return false;
-            $stmt = self::insert('INSERT INTO orderproducts (orderID,productID,quantity) VALUES(?,?,?)',[$orderID, $productID, $quantity]);
-            print_r($stmt);
+            $stmt = self::insert('INSERT INTO orderproducts (orderID,productID,quantity) VALUES(?,?,?)',[$orderID, $product['productID'], $product['quantity']]);
             return true;
         } catch (Exception $ex) {
             die("Error: " . $ex->getMessage());
         }
     }
 
-    function updateProductQuantity() {
-        
+    //step 3 of submit cart: update the available quantity for the product in Products table
+    function updateAvailableQuantity($product) {
+        try{
+            $sql = "UPDATE products SET availableQuantity = availableQuantity - ? WHERE productID = ?";
+            $stmt=self::$connection->prepare($sql)->execute([$product['quantity'], $product['productID']]);
+            return true;
+        } catch (Exception $ex) {
+            die("Error: " . $ex->getMessage());
+        }
     }
 }
