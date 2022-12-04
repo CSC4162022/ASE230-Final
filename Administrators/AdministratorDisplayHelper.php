@@ -13,7 +13,7 @@ $adminDH = new AdministratorDisplayHelper();
 if (isset($_GET['newSession'])) $adminDH->display();
 
 if (isset($_POST['manageOrders'])) $adminDH->displayOrderManagement($db);
-if (isset($_POST['manageUsers'])) $adminDH->displayProductManagement($db);
+if (isset($_POST['manageProducts'])) $adminDH->displayProductManagement($db);
 
 Class AdministratorDisplayHelper {
 
@@ -31,7 +31,7 @@ Class AdministratorDisplayHelper {
         AdministratorManageOrders::display($db);
     }
     function displayProductManagement($db) {
-        AdministratorManageProduct::display($db);
+        AdministratorManageProducts::display($db);
     }
     function display() {
         ?>

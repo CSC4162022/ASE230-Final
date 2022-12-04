@@ -6,9 +6,17 @@ $db = new AdministratorDBUtility();
 $db::connect();
 //admin selected manage orders
 if(isset($_GET['manageOrders'])) { AdministratorManageOrders::display($db); $_GET=null; }
-//admin selected view order/
-if(isset($_POST['orderID'])) { AdministratorManageOrders::display($db); $_POST=null; }
-
+//admin selected view order, status change not submitted
+if(isset($_POST['orderID']) &&
+    !isset($_POST['statusOption']) &&
+    !isset($_POST['deleteOrder'])) { AdministratorManageOrders::display($db); $_POST=null; }
+//admin submitted order status change
+if(isset($_POST['orderID']) &&
+    isset($_POST['statusOption'])) { AdministratorManageOrders::updateOrderStatus(($_POST['orderID']), $_POST['statusOption'], $db); }
+//admin submitted order deletion
+if(isset($_POST['orderID'])
+    && isset($_POST['deleteOrder'])
+    && !isset($_POST['statusOption'])) { AdministratorManageOrders::deleteOrder($_POST['orderID'], $db); }
 
 Class AdministratorManageOrders {
 
@@ -16,12 +24,18 @@ Class AdministratorManageOrders {
 
     }
 
-    static function updateUpdateOrderStatus($order, $status) {
-
+    static function updateOrderStatus($orderID, $status, $db) {
+        $db->updateOrderStatus($orderID, $status);
+        $_POST['statusOption']=null;
+        header('Location: ./AdministratorManageOrders.php?manageOrders=true');
     }
 
-    static function deleteOrder() {
-
+    static function deleteOrder($orderID, $db) {
+        print_r('TEST DEL');
+        //delete all products from order products first
+        if($db->deleteOrderProducts($orderID)) {
+            if($db->deleteOrder($orderID)) header('Location: ./AdministratorManageOrders.php?manageOrders=true');
+        }
     }
 
     static function display($db) {
@@ -46,6 +60,7 @@ Class AdministratorManageOrders {
                     <div class="d-flex align-items-center justify-content-center col-sm">
                         <div class="list-group">
                             <h5><?='User Orders'?></h5>
+                            <h4><a cla="btn btn-primary" href="<?='../Administrators/AdministratorDisplayHelper.php?newSession=true'?>"><?='Back'?></a></h4>
                             <ul>
                                 <?php
                                 for($i=0; $i<count($orders); $i++) {
@@ -81,10 +96,11 @@ Class AdministratorManageOrders {
                                 //if admin selected the order display it's products
                                 if(isset($_POST['orderID'])) {
                                     $statusOption=[];
+                                    $orderID=$_POST['orderID'];
                                 ?>
                                 <div class="container">
                                     <?php
-                                        //get order items using orderID
+                                        //display order items using orderID
                                          $orderItems=$db->getOrderItems($_POST['orderID']);
                                         if(isset($orderItems)) {
                                             $userName=$orderItems[0]['firstName'].' '.$orderItems[0]['lastName'];
@@ -98,20 +114,32 @@ Class AdministratorManageOrders {
                                             <p><?=' Product: '.$item['description'].' status: '.$item['orderStatus']?></p>
                                             <?php
                                             }
-                                        if($orderStatus=='ordered') $statusOption = ['canceled', 'in progress'];
-                                        if($orderStatus=='in progress') $statusOption = ['shipped'];
-                                        if($orderStatus=='shipped') $statusOption = ['delivered'];
+                                            if($orderStatus=='ordered') $statusOption = ['canceled', 'in progress'];
+                                            if($orderStatus=='in progress') $statusOption = ['shipped'];
+                                            if($orderStatus=='shipped') $statusOption = ['delivered'];
+                                            //permit status update if not canceled or delivered.
+
+                                            ?>
+                                                <form method="POST" class="form-outline" action="AdministratorManageOrders.php">
+                                                    <select name="<?='statusOption'?>">
+                                                        <?php foreach( $statusOption as $option ): ?>
+                                                            <option value="<?=$option?>"><?=$option?></option>
+                                                        <?php endforeach; ?>
+                                                    </select>
+                                                    <?php
+                                                    //if(!$orderStatus=='canceled') {
+                                                    ?>
+                                                        <input type="hidden" name="<?='orderID'?>" value="<?=$_POST['orderID']?>" />
+                                                        <input type="submit" value="<?='submit status change'?>" class="btn btn-primary">
+                                                    <?php
+                                                    //}
+                                                    ?>
+                                                </form>
+                                            <?php
+
                                         }
 
                                     ?>
-                                    <form method="POST" class="form-outline" action="AdministratorManageOrders.php">
-                                        <select name="<?='statusOption'?>">
-                                            <?php foreach( $statusOption as $option ): ?>
-                                                <option value="<?=$option?>"><?=$option?></option>
-                                            <?php endforeach; ?>
-                                        </select>
-                                        <input type="submit" value="<?='submit status change'?>" class="btn btn-primary">
-                                    </form>
                                 </div>
                                     <?php
                                 }
