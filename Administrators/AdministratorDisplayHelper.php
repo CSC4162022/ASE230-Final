@@ -9,7 +9,18 @@ $db = new AdministratorDBUtility();
 $admin = new Administrator();
 $admin->setAdminFromSession($_SESSION);
 $adminDH = new AdministratorDisplayHelper();
-//if new sign in display
+//new admin signed up, insert to admins
+if (isset($_GET['newAdministrator']) &&
+    isset($_GET['first']) &&
+    isset($_GET['last']) &&
+    isset($_GET['email'])) {
+    $admin->firstName=$_GET['first'];
+    $admin->lastName=$_GET['last'];
+    $admin->email=$_GET['email'];
+    $adminDH->createNewAdmin($db, $admin);
+    $adminDH->display();
+}
+//new sign in
 if (isset($_GET['newSession'])) $adminDH->display();
 
 if (isset($_POST['manageOrders'])) $adminDH->displayOrderManagement($db);
@@ -27,6 +38,9 @@ Class AdministratorDisplayHelper {
             $this->$property = $value;
         }
     }
+    function createNewAdmin($db, $admin) {
+        $db->createAdministrator($admin);
+    }
     function displayOrderManagement($db) {
         AdministratorManageOrders::display($db);
     }
@@ -43,7 +57,7 @@ Class AdministratorDisplayHelper {
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
             <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
             <link rel="stylesheet" href="assets/css/index.css" />
-            <title><?= 'Welcome ' . $_SESSION['email']?></title>
+            <title><?='Administrator Area'?></title>
         </head>
 
         <body>
