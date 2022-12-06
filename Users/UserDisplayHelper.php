@@ -23,13 +23,20 @@ if (isset($_POST['submitOrder'])) {
     $_POST=null;
     $_SESSION['cartItems']=[];
 }
+//new user signed up, insert to users
+if (isset($_GET['newUser']) &&
+isset($_GET['first']) && isset($_GET['last']) && isset($_GET['email'])) {
+    $user->firstName=$_GET['first'];
+    $user->lastName=$_GET['last'];
+    $user->email=$_GET['email'];
+    $userDH->createNewUser($db, $user);
+    $_GET=null;
+}
 //display products
 $products = $db->getProducts();
 $_SESSION['products']=$products;
 $userDH->displayProducts($products);
 
-//update available quantity
-//convenience class to display products
 Class UserDisplayHelper {
 
     static $cartItems=[];
@@ -62,6 +69,9 @@ Class UserDisplayHelper {
             $db->insertOrderProduct($product, $orderID);
             $db->updateAvailableQuantity($product);
         }
+    }
+    function createNewUser($db, $user) {
+        $db->createUser($user);
     }
     function displayOrder() {
         $cartItems=$_SESSION['cartItems'];
@@ -98,7 +108,7 @@ Class UserDisplayHelper {
                 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2" crossorigin="anonymous">
                 <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
                 <link rel="stylesheet" href="assets/css/index.css" />
-                <title><?= 'Welcome ' . $_SESSION['email']?></title>
+                <title><?='Users Area'?></title>
             </head>
             <body>
                 <div class="container text-center">

@@ -56,6 +56,14 @@ class UserDBUtility {
         }
     }
 
+    static function createUser($user) {
+        try{
+            return self::insert('INSERT INTO users (firstName,lastName,email) VALUES(?,?,?)',[$user->firstName, $user->lastName, $user->email]);;
+        } catch (Exception $ex) {
+            die("Error: " . $ex->getMessage());
+        }
+    }
+
     static function getUserID($email) {
         try{
             if (!isset($email)) return;
