@@ -44,6 +44,14 @@ class AdministratorDBUtility {
         return self::$connection->lastInsertId();
     }
 
+    static function createAdministrator($admin) {
+        try{
+            return self::insert('INSERT INTO administrators (firstName,lastName,email) VALUES(?,?,?)',[$admin->firstName, $admin->lastName, $admin->email]);;
+        } catch (Exception $ex) {
+            die("Error: " . $ex->getMessage());
+        }
+    }
+
     function deleteProduct($productID) {
         try{
             $stmt=  self::$connection->prepare('DELETE FROM products WHERE productID = ?');

@@ -3,6 +3,8 @@
 
 class Administrator
 {
+    private $firstName;
+    private $lastName;
     private $email;
     private $password;
     public function __get($property) {
