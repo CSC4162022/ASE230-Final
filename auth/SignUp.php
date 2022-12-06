@@ -2,7 +2,11 @@
 
 require 'AuthHelper.php';
 //user sign up form submission
-if (isset($_POST['email']) && isset($_POST['password']) && (isset($_POST['user']) || isset($_POST['administrator']))) {
+if (isset($_POST['email']) &&
+    isset($_POST['password']) &&
+    isset($_POST['firstName']) &&
+    isset($_POST['lastName']) &&
+    (isset($_POST['user']) || isset($_POST['administrator']))) {
 
     $userType = '';
     //get user type for sign up (admin or user)
@@ -10,8 +14,8 @@ if (isset($_POST['email']) && isset($_POST['password']) && (isset($_POST['user']
     if (isset($_POST['administrator'])) $userType = $_POST['administrator'];
     //sign up returns administrator or user then directs to appropriate area
     $userType = AuthHelper::signUp($_POST['email'], $_POST['password'], $userType);
-    if($userType=='user') header('Location: ../Users/UserDisplayHelper.php?newUser=true');
-    else if ($userType=='administrator') header('Location: ../Administrators/AdministratorDisplayHelper.php?newAdministrator=true');
+    if($userType=='user') header('Location: ../Users/UserDisplayHelper.php?newUser=true&first='.$_POST['firstName'].'&last='.$_POST['lastName'].'&email='.$_POST['email']);
+    else if ($userType=='administrator') header('Location: ../Administrators/AdministratorDisplayHelper.php?newAdministrator=true&first='.$_POST['firstName'].'&last='.$_POST['lastName'].'&email='.$_POST['email']);
     else header('Location: ./SignUp.php?failedSignUp=true');
 }
         ?>
@@ -35,9 +39,13 @@ if (isset($_POST['email']) && isset($_POST['password']) && (isset($_POST['user']
             <form method="POST" action="SignUp.php">
                 <h4 class="col-sm-4"><?='Sign Up'?></h4>
                 <div class="form-group col-sm-3">
-                    <label for="email">Email address</label>
+                    <label for="email"><?='Email Address'?></label>
                     <input required maxlength="<?='50'?>" type="email" name="<?='email'?>" class="form-control" placeholder="<?='Enter email'?>">
                     <small class="<?='form-text text-muted'?>"><?='This will be your user name.'?></small>
+                    <label for="firstName"><?='first name'?></label>
+                    <input required maxlength="<?='100'?>" type="text" name="<?='firstName'?>" class="form-control" placeholder="<?='Enter first'?>">
+                    <label for="lastName"><?='last name'?></label>
+                    <input required maxlength="<?='100'?>" type="text" name="<?='lastName'?>" class="form-control" placeholder="<?='Enter last'?>">
                 </div>
                 <div class="form-group col-sm-3">
                     <label for="password"><?='Password'?></label>
@@ -57,14 +65,13 @@ if (isset($_POST['email']) && isset($_POST['password']) && (isset($_POST['user']
                 </div>
                 <div class="form group">
                     <button type="submit" class="btn btn-primary"><?='Sign Up'?></button>
-                    <a href="<?='auth/AuthDisplayHelper.php'?>" class="btn btn-primary"><?='Back'?></a>
+                    <a href="<?='../Visitor.php'?>" class="btn btn-primary"><?='Back'?></a>
                 </div>
             </form>
         </div>
-
-        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+            <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
         </body>
         </html>
 <?php
