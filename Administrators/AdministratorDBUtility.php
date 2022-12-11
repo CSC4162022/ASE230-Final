@@ -73,7 +73,6 @@ class AdministratorDBUtility {
 
     function deleteOrderProductsByProductID($productID) {
         try{
-            print_r('CALLED');
             $sql = "DELETE FROM orderproducts WHERE orderproducts.productID = ?";
             return self::$connection->prepare($sql)->execute([$productID]);
         } catch (Exception $ex) {

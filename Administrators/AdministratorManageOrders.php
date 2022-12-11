@@ -31,7 +31,6 @@ Class AdministratorManageOrders {
     }
 
     static function deleteOrder($orderID, $db) {
-        print_r('TEST DEL');
         //delete all products from order products first
         if($db->deleteOrderProducts($orderID)) {
             if($db->deleteOrder($orderID)) header('Location: ./AdministratorManageOrders.php?manageOrders=true');
