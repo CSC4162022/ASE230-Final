@@ -36,7 +36,7 @@ Class ProductDetail {
                 <input type="hidden" name="<?='price'?>" value="<?=$selection['price']?>" />
                 <input type="hidden" name="<?='category'?>" value="<?=$selection['category']?>" />
                 <input type="submit" value="<?='Submit'?>" name = "<?= 'submitQuantity' ?>" class="btn btn-primary">
-                <a href="./UserDisplayHelper.php"><button class="btn btn-primary"><?='Back'?></button></a>
+                <a href="<?='./UserDisplayHelper.php?'?>"><button class="btn btn-primary"><?='Back'?></button></a>
             </form>
         </div>
         </body>

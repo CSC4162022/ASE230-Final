@@ -10,16 +10,18 @@ $user = new User();
 $user->setUserFromSession($_SESSION);
 
 //user selected quantity, add to order
-if (isset($_POST['quantity']) && isset($_POST['description'])
-    && isset($_POST['price']) && isset($_POST['category']) && isset($_POST['productID'])) {
+if (isset($_POST['quantity']) &&
+isset($_POST['description']) &&
+isset($_POST['price']) &&
+isset($_POST['category']) &&
+isset($_POST['productID']) &&
+isset($_POST['submitQuantity'])) {
     $userDH->updateOrder($_POST['quantity'], $_POST['description'], $_POST['price'], $_POST['category'], $_POST['productID']);
     $_POST=null;
-    $userDH->displayOrder();
 }
 //user submits order
 if (isset($_POST['submitOrder'])) {
     $userDH->submitOrder($db, $user);
-    //reset
     $_POST=null;
     $_SESSION['cartItems']=[];
 }
@@ -35,7 +37,9 @@ isset($_GET['first']) && isset($_GET['last']) && isset($_GET['email'])) {
 //display products
 $products = $db->getProducts();
 $_SESSION['products']=$products;
+if(isset($_SESSION['cartItems'])) $userDH->displayOrder();
 $userDH->displayProducts($products);
+
 
 Class UserDisplayHelper {
 
@@ -85,7 +89,7 @@ Class UserDisplayHelper {
                         <?php
                         for($i=0; $i<count($cartItems); $i++) {
                             ?>
-                            <p><?=$cartItems[$i]['description']?><?=$cartItems[$i]['price']?></p>
+                            <p><?=$cartItems[$i]['quantity'] . ' ' . $cartItems[$i]['description'] . ' $' . $cartItems[$i]['price'] * $cartItems[$i]['quantity']?></p>
                             <?php
                         }
                         ?>
@@ -114,6 +118,14 @@ Class UserDisplayHelper {
                 <div class="container text-center">
                     <div class="row">
                         <div class="form-outline mb-4 col-sm">
+                        <?php
+                          if(!isset($_SESSION['cartItems'])) {
+                              ?>
+                              <p><?='Select items to create an order'?></p>
+                              <?php
+                          }
+
+                        ?>
                             <p><a href="../auth/SignOut.php"><?= 'Sign Out' ?></a></p>
                             <p><a href="../index.php"><?= 'Back' ?></a></p>
                         </div>
