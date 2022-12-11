@@ -1,6 +1,4 @@
 <?php
-//our local database instance
-
 $port = 3306;
 $charset = 'utf8mb4';
 $options = [
@@ -8,18 +6,6 @@ $options = [
     \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
     \PDO::ATTR_EMULATE_PREPARES => false,
 ];
-
-//DB::connect($host,$db,$user,$pass);
-//$result=DB::query('SELECT * FROM users');
-//print_r($result->fetch());
-
-
-//$result=DB::prepared_query('SELECT * FROM users',[]);
-//print_r($result->fetch());
-
-
-//$result=DB::insert('INSERT INTO users (firstname,lastname) VALUES(?,?)',['test','test']);
-//print_r($result);
 
 class DB {
 

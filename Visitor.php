@@ -1,6 +1,6 @@
 <?php
 require 'AuthDisplayHelper.php';
-require 'Utilities.php';
+require_once 'Utilities.php';
 
 ?>
 <!doctype html>
@@ -15,12 +15,20 @@ require 'Utilities.php';
 </head>
 <body>
 <div class="container text-center">
+    <?php
+    if(isset($_GET['failedSignIn'])) {
+    ?>
+        <p><strong><?='Failed sign in'?></strong></p>
+    <?php
+    }
+    ?>
     <div class="d-flex align-items-center justify-content-between mt-1">
         <?php
         //Display sign in form and set db utilities for user and admin
         $products=[];
         $utilities = new Utilities();
         $products=$utilities->getProducts();
+
         AuthDisplayHelper::displaySignInForm();
         ?>
         <ul class="list-group">

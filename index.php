@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'Utilities.php';
+
 //immediately direct to visitors page
 ?>
 <!doctype html>
