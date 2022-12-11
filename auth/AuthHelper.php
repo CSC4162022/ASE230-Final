@@ -16,8 +16,9 @@ Class AuthHelper {
         if (self::userIsBanned($email, self::$bannedUsersFile)) return '';
         // check if the username is taken
         if (self::emailExists($email, self::$usersFile) || self::emailExists($email, self::$administratorsFile)) {
-            header('Location: ./Visitors.php?usernameTaken=true');
-        } else {
+            header('Location: ./SignUp.php?usernameTaken=true');
+        }
+        else {
             if ($userType=='user') {
                 self::saveNewUser(self::$usersFile, $email, self::encryptPassword($password));
                 $_SESSION['newEnrolledUser'] = true;
@@ -61,6 +62,7 @@ Class AuthHelper {
                 }
             }
         }
+        return '';
         //will return to users or admin page
         if (self::isLogged()) return $userType;
         else {
@@ -79,8 +81,10 @@ Class AuthHelper {
         return password_hash($password, PASSWORD_DEFAULT);
     }
 
+    //check for SQL injection chars
     //Utility function to validate length of the password and format of email
     static function validateSignUpInput($email, $password) {
+        if (!self::checkInjectionChars($email) || !self::checkInjectionChars($password)) return false;
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) return false;
         if (strlen($password) < 8) return false;
         return true;

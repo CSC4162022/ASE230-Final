@@ -12,6 +12,11 @@ if (isset($_POST['email']) &&
     //get user type for sign up (admin or user)
     if (isset($_POST['user'])) $userType = $_POST['user'];
     if (isset($_POST['administrator'])) $userType = $_POST['administrator'];
+    //check for injection chars
+    if (!AuthHelper::checkInjectionChars($_POST['email']) ||
+        !AuthHelper::checkInjectionChars($_POST['password'])) {
+        header('Location: ./SignUp.php?failedSignUp=true');
+    }
     //sign up returns administrator or user then directs to appropriate area
     $userType = AuthHelper::signUp($_POST['email'], $_POST['password'], $userType);
     if($userType=='user') header('Location: ../Users/UserDisplayHelper.php?newUser=true&first='.$_POST['firstName'].'&last='.$_POST['lastName'].'&email='.$_POST['email']);
@@ -38,6 +43,18 @@ if (isset($_POST['email']) &&
             </div>
             <form method="POST" action="SignUp.php">
                 <h4 class="col-sm-4"><?='Sign Up'?></h4>
+                <?php
+                if(isset($_GET['usernameTaken'])) {
+                    ?>
+                    <p><?='username taken'?></p>
+                    <?php
+                }
+                if(isset($_GET['failedSignUp'])) {
+                    ?>
+                    <p><strong><?='Sign up attempt failed'?></strong></p>
+                    <?php
+                }
+                ?>
                 <div class="form-group col-sm-3">
                     <label for="email"><?='Email Address'?></label>
                     <input required maxlength="<?='50'?>" type="email" name="<?='email'?>" class="form-control" placeholder="<?='Enter email'?>">

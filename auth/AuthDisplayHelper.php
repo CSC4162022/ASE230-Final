@@ -4,10 +4,15 @@ require "AuthHelper.php";
 
 //sign in returns administrator or user then directs to appropriate area
 if (isset($_POST['email']) && isset($_POST['password'])) {
+    //check for injections chars
+    if (!AuthHelper::checkInjectionChars($_POST['email']) ||
+        !AuthHelper::checkInjectionChars($_POST['password'])) {
+        header('Location: ../Visitor.php?failedSignIn=true');
+    }
     $userType = AuthHelper::signIn($_POST['email'], $_POST['password']);
     if($userType=='user') header('Location: ../Users/UserDisplayHelper.php?');
     else if ($userType=='administrator') header('Location: ../Administrators/AdministratorDisplayHelper.php?newSession=true');
-    else header('Location: ../index.php?failedSignIn=true');
+    else header('Location: ../Visitor.php?failedSignIn=true');
 
 }
 
